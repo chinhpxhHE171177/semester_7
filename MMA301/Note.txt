@@ -1,0 +1,70 @@
+cau lenh terminal:
+dir: de xem cac thuc muc trong project 
+type package.json : de xem chi tiet thu muc package.json
+adb: de xem cau hinh may ao android 
+npm install -g react-native: cai dat react-native 
+"devDependencies": {
+  "@react-native-community/cli": "latest"
+}
+npm i @react-native-community/cli@latest
+
+npm install --global yarn : de setup install yarn --> yarn -->de chay yarn android 
+
+SDK location not found. Define a valid SDK location with an ANDROID_HOME environment variable or by setting the sdk.dir path in your project's local propertiesBUILD FAILED in 6m 59s 
+
+Tim thu muc chua sdk cua android 
+Tao thu muc local.properties trong muc android o project react-native --> paste duong dan chua sdk trong thu muc may tinh cua ban (Vd: sdk.dir=D:\Android\Sdk) "sdk.dir=". Neu cho nao co ky tu dac biet thi them backplash o phia truoc no --> sdk.dir=D:\\Android\\Sdk (de giu nguyen ky tu do)
+
+Khi bi loi: The development server returned response error code: 500:
+B1: Delete node_modules and Reinstall Dependencies
+--> npm install or yarn install ( de install lai node_modules)
+B2: Reinstall regenerator-runtime
+--> npm install regenerator-runtime or yarn add regenerator-runtime
+B3: npm install react-native@latest
+B4: Run again 
+--> yarn android 
+
+
+Đảm bảo bạn đã cài đặt react-native-vector-icons bằng cách chạy lệnh:
+npm install react-native-vector-icons --save
+
+Nếu bạn sử dụng React Native CLI (không dùng Expo): Liên kết thư viện thủ công bằng cách chạy lệnh sau:
+npx react-native link react-native-vector-icons || yarn add react-native-vector-icons
+
+Them apply from: "../../node_modules/react-native-vector-icons/fonts.gradle" trong thu muc android\app\build.grade
+
+- validate email regex js (in page W3source)
+
+- yarn add react-natvie-keyboard-aware-scroll-view
+
+-- luu csdl 
+yarn add firebase 
+
+
+//save user in local storage 
+install library yarn add @react-native-async-storage/async-storage
+
+
+son di trong mua han quoc z!92vVc5dJj9u2B
+id10840443_springbootdb
+
+
+
+Cac buoc tao project react-native 
+B1: npx @react-native-community/cli init <YOUR_NAME_APP>
+npm install express mysql2 body-parser bcrypt jsonwebtoken cors
+npm install @react-navigation/native react-native-screens react-native-safe-area-context  react-native-vector-icons axios
+npm install express mysql2 body-parser dotenv cors bcryptjs jsonwebtoken
+npm install @react-navigation/stack
+@react-navigation/bottom-tabs
+@expo/vector-icons
+npm list @react-navigation/bottom-tabs @react-navigation/native react-native-screens react-native-safe-area-context
+npm install @react-navigation/native @react-navigation/stack @react-navigation/native-stack
+
+npx react-native start --reset-cache
+
+PORT=9999
+HOST='sql.freedb.tech'
+USER='freedb_chinhpx'
+PASSWORD='z!92vVc5dJj9u2B'
+DATABASE='freedb_chinhpham'
