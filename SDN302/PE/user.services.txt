@@ -1,0 +1,41 @@
+user.services:
+
+  async getAllUsers(user_id: string, page: number = 1, limit: number = 10) {
+    try {
+      const skip = (page - 1) * limit; // Tính số lượng bản ghi cần bỏ qua
+
+      // Lấy danh sách những user đã follow
+      const followedUsers = await databaseService.followers
+        .find({ user_id: new ObjectId(user_id) })
+        .toArray();
+
+      const followedUserIds = followedUsers.map((f) => new ObjectId(f.followed_user_id));
+
+      // Tìm những user chưa được follow
+      const query: any = followedUserIds.length > 0
+        ? { _id: { $nin: followedUserIds, $ne: new ObjectId(user_id) } } // Loại bỏ cả bản thân người dùng
+        : { _id: { $ne: new ObjectId(user_id) } }; // Nếu chưa follow ai, lấy tất cả trừ bản thân
+
+      const users = await databaseService.users
+        .find(query, {
+          projection: { _id: 1, name: 1, username: 1, email: 1, avatar: 1 }
+        })
+        .skip(skip)
+        .limit(limit)
+        .toArray();
+
+      // Đếm tổng số user chưa follow
+      const totalUsers = await databaseService.users.countDocuments(query);
+
+      return {
+        users,
+        total: totalUsers,
+        page,
+        limit,
+        totalPages: Math.ceil(totalUsers / limit)
+      };
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      return { users: [], total: 0, page, limit, totalPages: 0 };
+    }
+  }

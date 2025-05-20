@@ -1,0 +1,189 @@
+<div className='flex items-center justify-between pt-2.5'>
+                <div className='flex space-x-4'>
+                  <label className='cursor-pointer text-gray-600 hover:text-indigo-600 transition flex items-center gap-1'>
+                    <BiImageAlt className='text-xl' />
+                    <span className='text-sm'>Media</span>
+                    <input
+                      type='file'
+                      className='hidden'
+                      multiple
+                      accept='image/*,video/*'
+                      onChange={handleImageSelect}
+                    />
+                  </label>
+
+                  {/* AI Generation Orb */}
+                  <div
+                    className='relative flex items-center justify-center w-8 h-8 flex-shrink-0 cursor-pointer'
+                    onClick={handleAIGeneration}
+                  >
+                    <Orb hoverIntensity={0.3} rotateOnHover={true} hue={120} forceHoverState={isGeneratingTweet} />
+                    {isGeneratingTweet && (
+                      <div className='absolute inset-0 flex items-center justify-center'>
+                        <div className='animate-spin h-4 w-4 border-2 border-indigo-500 rounded-full border-t-transparent'></div>
+                      </div>
+                    )}
+                  </div>
+
+                  <Popover>
+                    <PopoverTrigger className='flex items-center gap-1 text-gray-600 hover:text-indigo-600 transition'>
+                      <BiHash className='text-xl' />
+                      <span className='text-sm'>Tags</span>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-72 p-4 rounded-lg bg-gray-800 text-white shadow-xl'>
+                      <h3 className='text-sm font-medium mb-2'>Add tags to your post</h3>
+                      <div className='flex gap-2 mb-3'>
+                        <input
+                          type='text'
+                          value={formik.values.currentHashtag}
+                          onChange={formik.handleChange}
+                          name='currentHashtag'
+                          placeholder='Enter tag name'
+                          className='flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-400'
+                        />
+                        <button
+                          type='button'
+                          onClick={addHashtag}
+                          className='bg-indigo-700 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-indigo-600 transition'
+                        >
+                          Add
+                        </button>
+                      </div>
+                      {formik.values.hashtags.length > 0 && (
+                        <div className='mt-3'>
+                          <div className='text-sm font-medium mb-2'>Your tags:</div>
+                          <div className='flex flex-wrap gap-2'>
+                            {formik?.values?.hashtags?.map((hashtag: any, index: any) => (
+                              <span
+                                key={index}
+                                className='bg-indigo-700 text-white px-2 py-1 rounded-full text-xs flex items-center'
+                              >
+                                #{!isPendingTweet ? (hashtag as any).name : hashtag}
+                                <button
+                                  type='button'
+                                  onClick={() => {
+                                    const newHashtags = formik.values.hashtags.filter((_, i) => i !== index)
+                                    formik.setFieldValue('hashtags', newHashtags)
+                                  }}
+                                  className='ml-1 text-indigo-300 hover:text-indigo-500'
+                                >
+                                  ×
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </PopoverContent>
+                  </Popover>
+
+                  <Popover>
+                    <PopoverTrigger className='flex items-center gap-1 text-gray-600 hover:text-indigo-600 transition'>
+                      <BiAt className='text-xl' />
+                      <span className='text-sm'>Mention</span>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-72 p-4 rounded-lg bg-gray-800 text-white shadow-xl'>
+                      <h3 className='text-sm font-medium mb-2'>Mention people</h3>
+                      <div className='flex gap-2 mb-3'>
+                        <input
+                          type='text'
+                          value={formik.values.currentMention}
+                          onChange={formik.handleChange}
+                          name='currentMention'
+                          placeholder='Enter username'
+                          className='flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-400'
+                        />
+                        <button
+                          type='button'
+                          onClick={addMention}
+                          className='bg-indigo-700 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-indigo-600 transition'
+                        >
+                          Add
+                        </button>
+                      </div>
+                      {formik.values.mentions.length > 0 && (
+                        <div className='mt-3'>
+                          <div className='text-sm font-medium mb-2'>People you mentioned:</div>
+                          <div className='flex flex-wrap gap-2'>
+                            {formik?.values?.mentions?.map((mention: any, index: any) => {
+                              const isValid = !allIdWithMentionName_Undefined.includes(mention)
+                              return (
+                                <span
+                                  key={index}
+                                  className={`px-2 py-1 rounded-full text-xs flex items-center ${isValid ? 'bg-green-700 text-white' : 'bg-gray-700 text-gray-400'
+                                    }`}
+                                >
+                                  @{!isPendingTweet ? (mention as any).username : mention}
+                                  <button
+                                    type='button'
+                                    onClick={() => {
+                                      const newMentions = formik.values.mentions.filter((_, i) => i !== index)
+                                      formik.setFieldValue('mentions', newMentions)
+                                    }}
+                                    className={`ml-1 ${isValid
+                                        ? 'text-green-300 hover:text-green-500'
+                                        : 'text-gray-400 hover:text-gray-500'
+                                      }`}
+                                  >
+                                    ×
+                                  </button>
+                                </span>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </PopoverContent>
+                  </Popover>
+
+                  <Popover>
+                    <PopoverTrigger className='flex items-center gap-1 text-gray-600 hover:text-indigo-600 transition'>
+                      <BiCog className='text-xl' />
+                      <span className='text-sm'>Privacy</span>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-64 p-4 rounded-lg bg-gray-800 text-white shadow-xl'>
+                      <h3 className='text-sm font-medium mb-3'>Who can see this post?</h3>
+                      <div className='space-y-3'>
+                        <label className='flex items-center gap-2 cursor-pointer'>
+                          <input
+                            type='radio'
+                            value={1}
+                            checked={formik.values.audience === 1}
+                            name='audience'
+                            className='accent-indigo-500'
+                            onChange={() => formik.setFieldValue('audience', 1)}
+                          />
+                          <div>
+                            <div className='text-sm font-medium'>Everyone</div>
+                            <div className='text-xs text-gray-400'>Any user can see this post</div>
+                          </div>
+                        </label>
+                        <label className='flex items-center gap-2 cursor-pointer'>
+                          <input
+                            type='radio'
+                            value={0}
+                            checked={formik.values.audience === 0}
+                            name='audience'
+                            className='accent-indigo-500'
+                            onChange={() => formik.setFieldValue('audience', 0)}
+                          />
+                          <div>
+                            <div className='text-sm font-medium'>Circle Only</div>
+                            <div className='text-xs text-gray-400'>Only people in your circle can see</div>
+                          </div>
+                        </label>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <button
+                  type='submit'
+                  disabled={uploadingImage}
+                  className='mx-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-2 rounded-lg
+                  font-medium hover:from-violet-700 hover:to-indigo-700 transition-colors duration-200 
+                  focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 disabled:opacity-70'
+                >
+                  {uploadingImage ? 'Sharing...' : isTitleName}
+                </button>
+              </div>

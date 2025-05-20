@@ -1,0 +1,380 @@
+1. CREATE (Thêm dữ liệu)
+- .save(): Lưu một document mới vào collection --> user.save().then(...)
+- .create(): Tạo và lưu một document mới --> User.create({ name: 'Alice', age: 25 })
+- .insertMany(): Thêm nhiều document cùng lúc --> User.insertMany([{...}, {...}]) 
+
+EX: 
+const user = new User({ name: 'Alice', age: 25 });
+user.save().then(data => console.log(data));
+
+User.create({ name: 'Bob', age: 30 }).then(data => console.log(data));
+
+User.insertMany([{ name: 'Charlie', age: 22 }, { name: 'David', age: 28 }])
+    .then(data => console.log(data));
+
+
+2. READ (Lấy dữ liệu)
+- .find()	Tìm tất cả document khớp điều kiện	User.find({ age: 25 })
+- .findOne()	Tìm một document đầu tiên khớp điều kiện	User.findOne({ name: 'Alice' })
+- .findById()	Tìm document theo _id	User.findById('65f123abc456')
+- .select()	Lọc chỉ lấy một số trường cụ thể	User.find().select('name age')
+- .limit()	Giới hạn số lượng document trả về	User.find().limit(5)
+- .sort()	Sắp xếp theo một trường nào đó	User.find().sort({ age: -1 })
+- .skip()	Bỏ qua một số document (dùng cho pagination)	User.find().skip(10).limit(5)
+- .countDocuments()	Đếm số lượng document khớp điều kiện	User.countDocuments({ age: 25 })
+- .distinct()	Lấy danh sách giá trị duy nhất của một trường	User.distinct('age')
+
+Ex: 
+User.find({ age: 25 }).then(data => console.log(data));
+
+User.findOne({ name: 'Alice' }).then(data => console.log(data));
+
+User.findById('65f123abc456').then(data => console.log(data));
+
+User.find().select('name age').then(data => console.log(data));
+
+User.find().sort({ age: -1 }).limit(3).then(data => console.log(data));
+
+User.countDocuments({ age: 25 }).then(count => console.log(count));
+
+
+3. UPDATE (Cập nhật dữ liệu)
+- .updateOne()	Cập nhật một document đầu tiên tìm thấy	User.updateOne({ name: 'Alice' }, { age: 26 })
+- .updateMany()	Cập nhật nhiều document cùng lúc	User.updateMany({ age: 25 }, { age: 30 })
+- .findByIdAndUpdate()	Tìm theo _id và cập nhật	User.findByIdAndUpdate(id, { age: 27 }, { new: true })
+- .findOneAndUpdate()	Tìm document đầu tiên khớp và cập nhật	User.findOneAndUpdate({ name: 'Alice' }, { age: 28 }, { new: true })
+
+EX:
+User.updateOne({ name: 'Alice' }, { age: 26 }).then(data => console.log(data));
+
+User.updateMany({ age: 25 }, { age: 30 }).then(data => console.log(data));
+
+User.findByIdAndUpdate('65f123abc456', { age: 27 }, { new: true })
+    .then(data => console.log(data));
+
+User.findOneAndUpdate({ name: 'Alice' }, { age: 28 }, { new: true })
+    .then(data => console.log(data));
+
+
+4. DELETE (Xóa dữ liệu)
+- .deleteOne()	Xóa một document đầu tiên khớp điều kiện	User.deleteOne({ name: 'Alice' })
+- .deleteMany()	Xóa nhiều document khớp điều kiện	User.deleteMany({ age: 25 })
+- .findByIdAndDelete()	Tìm theo _id và xóa	User.findByIdAndDelete('65f123abc456')
+- .findOneAndDelete()	Tìm document đầu tiên khớp và xóa	User.findOneAndDelete({ name: 'Alice' })
+
+Ex: 
+User.deleteOne({ name: 'Alice' }).then(data => console.log(data));
+
+User.deleteMany({ age: 25 }).then(data => console.log(data));
+
+User.findByIdAndDelete('65f123abc456').then(data => console.log(data));
+
+User.findOneAndDelete({ name: 'Alice' }).then(data => console.log(data));
+
+
+5. POPULATE (Liên kết giữa các Collection)
+- .populate()	Điền dữ liệu từ collection khác	Post.find().populate('author')
+
+Ex: 
+const PostSchema = new mongoose.Schema({
+  title: String,
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+});
+const Post = mongoose.model('Post', PostSchema);
+
+Post.find().populate('author').then(posts => console.log(posts));
+
+
+6.1. Bài toán tìm kiếm và lọc dữ liệu
+1.1. Tìm tất cả người dùng có tuổi lớn hơn 25
+User.find({ age: { $gt: 25 } }).then(data => console.log(data));
+
+Giải thích:
+$gt: lớn hơn (>)
+$gte: lớn hơn hoặc bằng (>=)
+
+1.2. Tìm tất cả người dùng có tuổi từ 20 đến 30
+User.find({ age: { $gte: 20, $lte: 30 } }).then(data => console.log(data));
+
+Toán tử:
+$lt: nhỏ hơn (<)
+$lte: nhỏ hơn hoặc bằng (<=)
+
+1.3. Tìm tất cả người dùng có tên bắt đầu bằng "A"
+User.find({ name: /^A/ }).then(data => console.log(data));
+
+Giải thích:
+^A: tìm những tên bắt đầu bằng chữ A (Regex trong MongoDB)
+
+6.2. Bài toán tìm kiếm theo nhiều điều kiện
+2.1. Tìm người dùng có tuổi trên 25 và sống ở Hà Nội
+User.find({ age: { $gt: 25 }, city: "Hà Nội" }).then(data => console.log(data));
+
+2.2. Tìm người dùng có tên là "Alice" hoặc "Bob"
+User.find({ name: { $in: ["Alice", "Bob"] } }).then(data => console.log(data));
+
+Toán tử:
+$in: tìm giá trị nằm trong danh sách
+$nin: tìm giá trị không nằm trong danh sách
+
+6.3. Bài toán tìm kiếm với điều kiện logic
+3.1. Tìm người dùng có tuổi trên 25 HOẶC sống ở Hồ Chí Minh
+User.find({ $or: [{ age: { $gt: 25 } }, { city: "Hồ Chí Minh" }] })
+    .then(data => console.log(data));
+
+Toán tử logic:
+$or: ít nhất một điều kiện đúng
+$and: tất cả điều kiện đều đúng
+
+3.2. Tìm người dùng KHÔNG sống ở Hà Nội
+User.find({ city: { $ne: "Hà Nội" } }).then(data => console.log(data));
+
+Toán tử:
+$ne: không bằng (!=)
+
+6.4. Bài toán sắp xếp, giới hạn, phân trang
+4.1. Sắp xếp danh sách người dùng theo tuổi tăng dần
+User.find().sort({ age: 1 }).then(data => console.log(data));
+
+1: tăng dần
+-1: giảm dần
+
+4.2. Giới hạn số lượng kết quả trả về
+User.find().limit(5).then(data => console.log(data));
+
+limit(5): chỉ lấy 5 kết quả
+
+4.3. Bỏ qua 10 người đầu tiên, lấy 5 người tiếp theo (pagination)
+User.find().skip(10).limit(5).then(data => console.log(data));
+Dùng cho phân trang:
+
+Trang n với pageSize = 5 ⇒ skip = (n-1) * pageSize
+
+6.5. Bài toán đếm số lượng document
+5.1. Đếm số lượng người dùng có tuổi trên 30
+User.countDocuments({ age: { $gt: 30 } }).then(count => console.log(count));
+
+5.2. Đếm số lượng người dùng ở từng thành phố
+User.aggregate([
+  { $group: { _id: "$city", count: { $sum: 1 } } }
+]).then(data => console.log(data));
+Giải thích:
+$group: gom nhóm theo "city"
+$sum: 1: đếm số lượng
+
+6.6. Bài toán populate (liên kết bảng)
+6.1. Tìm bài viết và lấy thông tin tác giả
+Post.find().populate("author").then(posts => console.log(posts));
+
+author là ObjectId tham chiếu đến bảng User
+
+6.2. Populate nhiều cấp (lấy thêm thông tin trong author)
+Post.find().populate({
+  path: "author",
+  select: "name email"
+}).then(posts => console.log(posts));
+
+Chỉ lấy name và email của author
+
+6.7. Bài toán cập nhật dữ liệu
+7.1. Cập nhật tuổi của tất cả người dùng tên "Alice"
+User.updateMany({ name: "Alice" }, { age: 28 }).then(data => console.log(data));
+
+7.2. Tăng tuổi của tất cả người dùng lên 1
+User.updateMany({}, { $inc: { age: 1 } }).then(data => console.log(data));
+
+$inc: tăng/giảm giá trị
+
+6.8. Bài toán xóa dữ liệu
+8.1. Xóa tất cả người dùng có tuổi dưới 18
+User.deleteMany({ age: { $lt: 18 } }).then(data => console.log(data));
+
+8.2. Xóa người dùng theo ID
+User.findByIdAndDelete("65f123abc456").then(data => console.log(data));
+
+6.9. Định dạng dữ liệu trước khi lưu (Middleware)
+9.1. Chuyển name thành chữ thường trước khi lưu
+UserSchema.pre("save", function(next) {
+  this.name = this.name.toLowerCase();
+  next();
+});
+
+9.2. Tự động thêm timestamp khi tạo document
+const UserSchema = new mongoose.Schema({
+  name: String,
+  age: Number
+}, { timestamps: true });
+
+Tự động tạo createdAt và updatedAt
+
+
+7. Schema hoàn chỉnh với tất cả validation
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true, minlength: 3, maxlength: 50 },
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true, 
+    match: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 8,
+    match: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+  },
+  age: { 
+    type: Number, 
+    required: true, 
+    validate: { 
+      validator: value => value >= 18, 
+      message: "Tuổi phải lớn hơn hoặc bằng 18" 
+    }
+  },
+  phone: { type: String, match: /^(0|\+84)[3-9][0-9]{8}$/ },
+//Số điện thoại hợp lệ của Việt Nam bắt đầu bằng 0 hoặc +84, tiếp theo là 9 số.
+  createdAt: { type: Date, default: Date.now }
+});
+
+// Middleware: Chuyển email về chữ thường trước khi lưu
+UserSchema.pre("save", function(next) {
+  this.email = this.email.toLowerCase();
+  next();
+});
+
+// Middleware: Hash password trước khi lưu
+UserSchema.pre("save", async function(next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+// Virtual field: fullName
+UserSchema.virtual("fullName").get(function () {
+  return this.firstName + " " + this.lastName;
+});
+
+const User = mongoose.model("User", UserSchema);
+module.exports = User;
+
+8. Các toán tử trong Mongoose
+8.1. Toán tử so sánh
+Toán tử	Ý nghĩa	Ví dụ
+$eq	Bằng	{ age: { $eq: 18 } }
+$ne	Không bằng	{ age: { $ne: 18 } }
+$gt	Lớn hơn	{ age: { $gt: 18 } }
+$gte	Lớn hơn hoặc bằng	{ age: { $gte: 18 } }
+$lt	Nhỏ hơn	{ age: { $lt: 18 } }
+$lte	Nhỏ hơn hoặc bằng	{ age: { $lte: 18 } }
+$in	Giá trị nằm trong danh sách	{ age: { $in: [18, 21, 25] } }
+$nin	Giá trị không nằm trong danh sách	{ age: { $nin: [18, 21, 25] } }
+
+8.2. Toán tử logic
+Toán tử	Ý nghĩa	Ví dụ
+$and	Tất cả điều kiện phải đúng	{ $and: [{ age: { $gt: 18 } }, { age: { $lt: 30 } }] }
+$or	Một trong các điều kiện đúng	{ $or: [{ age: { $lt: 18 } }, { age: { $gt: 60 } }] }
+$not	Phủ định điều kiện	{ age: { $not: { $gte: 18 } } }
+$nor	Không có điều kiện nào đúng	{ $nor: [{ age: { $lt: 18 } }, { age: { $gt: 60 } }] }
+
+8.3. Toán tử tìm kiếm chuỗi
+Toán tử	Ý nghĩa	Ví dụ
+$regex	Tìm kiếm theo biểu thức chính quy	{ name: { $regex: "^Nguyen", $options: "i" } }
+$text	Tìm kiếm văn bản toàn văn	{ $text: { $search: "javascript" } }
+
+8.4. Toán tử mảng
+Toán tử	Ý nghĩa	Ví dụ
+$all	Chứa tất cả các phần tử trong danh sách	{ tags: { $all: ["mongodb", "mongoose"] } }
+$size	Kích thước mảng	{ tags: { $size: 3 } }
+$elemMatch	Tìm phần tử trong mảng	{ scores: { $elemMatch: { subject: "Math", score: { $gte: 90 } } } }
+
+8.5. Toán tử cập nhật
+Toán tử	Ý nghĩa	Ví dụ
+$set	Cập nhật giá trị trường	{ $set: { name: "New Name" } }
+$unset	Xóa trường	{ $unset: { age: "" } }
+$inc	Tăng hoặc giảm giá trị số	{ $inc: { age: 1 } }
+$push	Thêm phần tử vào mảng	{ $push: { tags: "newTag" } }
+$pull	Xóa phần tử khỏi mảng	{ $pull: { tags: "oldTag" } }
+
+
+9. Các dạng bài toán thực tế với Mongoose
+Dưới đây là các bài toán phổ biến và cách giải bằng Mongoose.
+
+2.1. Tìm tất cả người dùng có tuổi lớn hơn 18
+User.find({ age: { $gt: 18 } }).then(users => console.log(users));
+
+2.2. Tìm người dùng có email kết thúc bằng "@gmail.com"
+User.find({ email: { $regex: "@gmail\\.com$", $options: "i" } }).then(users => console.log(users));
+
+2.3. Tìm người dùng có tuổi trong khoảng 20-30
+User.find({ age: { $gte: 20, $lte: 30 } }).then(users => console.log(users));
+
+2.4. Tìm người dùng có tên "John" hoặc "David"
+User.find({ name: { $in: ["John", "David"] } }).then(users => console.log(users));
+
+2.5. Cập nhật tên người dùng có email là "example@gmail.com"
+User.updateOne({ email: "example@gmail.com" }, { $set: { name: "Updated Name" } }).then(result => console.log(result));
+
+2.6. Xóa tất cả người dùng có tuổi nhỏ hơn 18
+User.deleteMany({ age: { $lt: 18 } }).then(result => console.log(result));
+
+2.7. Thêm một tag vào danh sách tags của người dùng
+User.updateOne({ email: "example@gmail.com" }, { $push: { tags: "newTag" } }).then(result => console.log(result));
+
+2.8. Xóa một tag khỏi danh sách tags
+User.updateOne({ email: "example@gmail.com" }, { $pull: { tags: "oldTag" } }).then(result => console.log(result));
+
+2.9. Tìm người dùng có ít nhất 3 tag
+User.find({ tags: { $size: 3 } }).then(users => console.log(users));
+
+2.10. Tìm người dùng có bài viết chứa từ "Mongoose" trong nội dung
+User.find({ $text: { $search: "Mongoose" } }).then(users => console.log(users));
+
+2.11. Tìm người dùng có bài viết trong 30 ngày gần nhất
+const thirtyDaysAgo = new Date();
+thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+User.find({ createdAt: { $gte: thirtyDaysAgo } }).then(users => console.log(users));
+
+2.12. Đếm số lượng người dùng có tuổi lớn hơn 18
+User.countDocuments({ age: { $gt: 18 } }).then(count => console.log("Số lượng:", count));
+
+2.13. Lấy danh sách người dùng và sắp xếp theo tuổi giảm dần
+User.find().sort({ age: -1 }).then(users => console.log(users));
+
+2.14. Phân trang danh sách người dùng (mỗi trang 10 người)
+const page = 2;
+const limit = 10;
+User.find()
+  .skip((page - 1) * limit)
+  .limit(limit)
+  .then(users => console.log(users));
+
+
+
+10. Ví dụ trả về response hợp lệ khi có lỗi validation
+Cách 1: Trả về lỗi từ Mongoose validation 
+exports.register = async (req, res) => {
+    try {
+        const newUser = new User(req.body);
+        const result = await newUser.save();
+        res.status(201).json({ message: "User created successfully!", result });
+    } catch (error) {
+        if (error.name === "ValidationError") {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ message: "Validation failed", errors });
+        }
+        res.status(500).json({ message: "Server error" });
+    }
+};
+ 
+
+--> {
+    "message": "Validation failed",
+    "errors": [
+        "Email is required",
+        "Password must be at least 6 characters"
+    ]
+}
