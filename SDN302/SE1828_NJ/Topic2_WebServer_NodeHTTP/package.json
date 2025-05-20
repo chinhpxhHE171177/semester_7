@@ -1,0 +1,12 @@
+{
+  "name": "topic2_webserver_nodehttp",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

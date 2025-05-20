@@ -1,0 +1,38 @@
+{
+    "message": "List of Employees",
+    "result": [
+        {
+            "id": 1,
+            "firstname": "Hoàng",
+            "lastname": "Nguyễn Ngọc",
+            "dob": "2003/02/20",
+            "location": {
+                "address": "190 Nguyễn Tuân, Thanh Xuân",
+                "city": "Hà Nội",
+                "country": "Việt Nam"
+            }
+        },
+        {
+            "id": 2,
+            "firstname": "Tuấn",
+            "lastname": "Phạm Ngọc",
+            "dob": "2003/07/11",
+            "location": {
+                "address": "210 Nguyễn Tuân, Thanh Xuân",
+                "city": "Hà Nội",
+                "country": "Việt Nam"
+            }
+        },
+        {
+            "id": 3,
+            "firstname": "Huyền",
+            "lastname": "Nguyễn Kim",
+            "dob": "2003/05/17",
+            "location": {
+                "address": "107 Nguyễn Tuân, Thanh Xuân",
+                "city": "Hà Nội",
+                "country": "Việt Nam"
+            }
+        }
+    ]
+}
